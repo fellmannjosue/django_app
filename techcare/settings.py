@@ -10,7 +10,17 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+import os
 from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+STATIC_URL = '/static/'
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'helpdesk/static'),
+]
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -44,16 +54,10 @@ INSTALLED_APPS = [
 
 #base de datos
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'techcare_db',     # Nombre de tu base de datos
-        'USER': 'root',            # Tu usuario de MySQL
-        'PASSWORD': '',            # Contraseña del usuario
-        'HOST': 'localhost',       # Dirección del servidor (localhost si es local)
-        'PORT': '3306',            # Puerto por defecto de MySQL
-    }
-}
+
+
+
+
 
 # Configuración de envío de correos
 
@@ -61,9 +65,9 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'tu_correo@gmail.com'
-EMAIL_HOST_PASSWORD = 'tu_contraseña_de_aplicación'
-DEFAULT_FROM_EMAIL = 'tu_correo@gmail.com'
+EMAIL_HOST_USER = 'techcare.app2024@gmail.com'
+EMAIL_HOST_PASSWORD = 'dvex nxbf quaj nxtc'
+DEFAULT_FROM_EMAIL = 'techcare.app2024@gmail.com'
 
 
 MIDDLEWARE = [
@@ -81,7 +85,7 @@ ROOT_URLCONF = 'techcare.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'helpdesk/templates', BASE_DIR / 'inventory/templates', BASE_DIR / 'maintenance/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -100,12 +104,18 @@ WSGI_APPLICATION = 'techcare.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# Configuración de MySQL
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'techcare_db',  # Nombre de tu base de datos en XAMPP
+        'USER': 'root',         # Usuario por defecto de MySQL en XAMPP
+        'PASSWORD': '',         # Contraseña por defecto (vacía en XAMPP)
+        'HOST': '127.0.0.1',    # Dirección localhost en IPv4
+        'PORT': '3306',         # Puerto por defecto para MySQL
     }
 }
+
 
 
 # Password validation

@@ -8,6 +8,7 @@ def submit_ticket(request):
         form = TicketForm(request.POST)
         if form.is_valid():
             ticket = form.save()
+            print("Ticket guardado correctamente:", ticket)
 
             # Enviar un correo al técnico
             send_mail(
@@ -37,6 +38,9 @@ def submit_ticket(request):
             )
 
             return redirect('success')
+        else:
+            print(form.errors)  # Imprime los errores si el formulario no es válido
+
     else:
         form = TicketForm()
 
