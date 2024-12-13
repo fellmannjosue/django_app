@@ -50,14 +50,8 @@ INSTALLED_APPS = [
     'helpdesk',
     'inventory',
     'maintenance',
+    'accounts',	
 ]
-
-#base de datos
-
-
-
-
-
 
 # Configuración de envío de correos
 
@@ -116,6 +110,9 @@ DATABASES = {
     }
 }
 
+LOGIN_URL = '/accounts/login/'
+LOGIN_REDIRECT_URL = '/accounts/menu/'
+LOGOUT_REDIRECT_URL = '/accounts/login/'
 
 
 # Password validation
