@@ -1,0 +1,63 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            margin: 20px;
+        }
+        .header {
+            background-color: #004080;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+            font-size: 1.5em;
+        }
+        .content {
+            margin: 20px 0;
+        }
+        .footer {
+            background-color: #004080;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+            font-size: 0.9em;
+            margin-top: 20px;
+        }
+        .ticket-info {
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .highlight {
+            color: #004080;
+            font-weight: bold;
+        }
+    </style>
+    <title>Confirmación de Recepción del Ticket</title>
+</head>
+<body>
+    <div class="header">
+        <p>IT Service Management</p>
+    </div>
+
+    <div class="content">
+        <p class="ticket-info">Estado: <span class="highlight">{{ ticket.status }}</span></p>
+        <p class="ticket-info">Ticket ID: <span class="highlight">{{ ticket.id }}</span></p>
+
+        <h3>Detalles del Ticket:</h3>
+        <p><strong>Nombre:</strong> {{ ticket.name }}</p>
+        <p><strong>Descripción:</strong> {{ ticket.description }}</p>
+
+        <p>Hemos recibido su ticket y será revisado por nuestro equipo técnico.</p>
+
+        <p>Gracias por su solicitud.</p>
+    </div>
+
+    <div class="footer">
+        <p>TechCare Suite - Gestión de Asistencia Técnica</p>
+    </div>
+</body>
+</html>
