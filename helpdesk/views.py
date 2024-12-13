@@ -1,6 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from .models import Ticket
 from .forms import TicketForm
 
@@ -47,10 +49,13 @@ def submit_ticket(request):
 def success(request):
     return render(request, 'helpdesk/success.html')
 
+@login_required
 def technician_dashboard(request):
     tickets = Ticket.objects.all()
+    messages.info(request, 'Bienvenido al Dashboard de Técnico.')
     return render(request, 'helpdesk/technician_dashboard.html', {'tickets': tickets})
 
+@login_required
 def update_ticket(request, ticket_id):
     ticket = get_object_or_404(Ticket, id=ticket_id)
     
@@ -71,6 +76,7 @@ def update_ticket(request, ticket_id):
             html_message=message_update,
         )
 
+        messages.success(request, f'El estado del ticket #{ticket.id} se actualizó correctamente.')
         return redirect('technician_dashboard')
 
     return render(request, 'helpdesk/update_ticket.html', {'ticket': ticket})
