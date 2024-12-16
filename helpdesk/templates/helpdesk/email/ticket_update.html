@@ -1,4 +1,3 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -6,58 +5,58 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            color: #333;
-            margin: 20px;
+            background-color: #f8f8f8;
+            padding: 20px;
+        }
+        .email-container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: auto;
         }
         .header {
-            background-color: #004080;
-            color: #fff;
-            padding: 10px;
             text-align: center;
-            font-size: 1.5em;
+            margin-bottom: 20px;
+        }
+        .header img {
+            width: 100px;
+        }
+        .header h1 {
+            font-size: 20px;
+            color: #333;
         }
         .content {
-            margin: 20px 0;
+            margin-bottom: 20px;
+        }
+        .content p {
+            font-size: 14px;
+            line-height: 1.5;
         }
         .footer {
-            background-color: #004080;
-            color: #fff;
-            padding: 10px;
+            font-size: 12px;
             text-align: center;
-            font-size: 0.9em;
-            margin-top: 20px;
-        }
-        .ticket-info {
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
-        .highlight {
-            color: #004080;
-            font-weight: bold;
+            color: #555;
         }
     </style>
-    <title>Actualización del Ticket</title>
 </head>
 <body>
-    <div class="header">
-        <p>IT Service Management</p>
-    </div>
-
-    <div class="content">
-        <p class="ticket-info">Estado: <span class="highlight">{{ ticket.status }}</span></p>
-        <p class="ticket-info">Ticket ID: <span class="highlight">{{ ticket.id }}</span></p>
-
-        <h3>Historial:</h3>
-        <p><strong>{{ ticket.updated_at|date:"d M Y - H:i:s" }} - {{ technician_name }}</strong></p>
-        <p>{{ ticket.description }}</p>
-
-        <p>El estado de su ticket ha sido actualizado y ya se encuentra en revisión por nuestro equipo técnico.</p>
-
-        <p>Gracias por su paciencia.</p>
-    </div>
-
-    <div class="footer">
-        <p>TechCare Suite - Gestión de Asistencia Técnica</p>
+    <div class="email-container">
+        <div class="header">
+            <img src="cid:logo_nuevo_amanecer" alt="Nuevo Amanecer Logo">
+            <h1>Soporte Técnico de Nuevo Amanecer</h1>
+        </div>
+        <div class="content">
+            <p><strong>Estimado Usuario:</strong></p>
+            <p>Su ticket ha sido actualizado con el siguiente estado:</p>
+            <p><strong>Nuevo Estado:</strong> {{ ticket.status }}</p>
+            <p>Gracias por su paciencia. Estamos trabajando en su solicitud.</p>
+        </div>
+        <div class="footer">
+            <p>Atentamente,</p>
+            <p>Equipo de Soporte Técnico de Nuevo Amanecer</p>
+        </div>
     </div>
 </body>
 </html>
