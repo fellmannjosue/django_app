@@ -1,7 +1,9 @@
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QTextEdit, QPushButton, QVBoxLayout
+import sys
+import json
+import requests
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QTextEdit, QPushButton, QVBoxLayout, QMessageBox
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtCore import Qt
-import sys
 
 class TicketForm(QWidget):
     def __init__(self):
@@ -50,12 +52,44 @@ class TicketForm(QWidget):
         self.setLayout(layout)
 
     def submit_ticket(self):
-        # Aquí se enviaría el ticket a la base de datos o servidor
-        print("Ticket enviado")
-        print(f"Nombre: {self.name_input.text()}")
-        print(f"Grado: {self.grade_input.text()}")
-        print(f"Correo Electrónico: {self.email_input.text()}")
-        print(f"Descripción: {self.description_input.toPlainText()}")
+        name = self.name_input.text()
+        grade = self.grade_input.text()
+        email = self.email_input.text()
+        description = self.description_input.toPlainText()
+
+        if not all([name, grade, email, description]):
+            QMessageBox.warning(self, "Error", "Por favor, completa todos los campos.")
+            return
+
+        data = {
+            'name': name,
+            'grade': grade,
+            'email': email,
+            'description': description
+        }
+
+        try:
+            response = requests.post(
+                'http://127.0.0.1:8000/helpdesk/submit_ticket/',
+                data=json.dumps(data),
+                headers={'Content-Type': 'application/json'}
+            )
+
+            if response.status_code == 201:
+                QMessageBox.information(self, "Éxito", "Ticket enviado correctamente.")
+                # Limpiar el formulario automáticamente
+                self.name_input.clear()
+                self.grade_input.clear()
+                self.email_input.clear()
+                self.description_input.clear()
+            else:
+                error_message = response.json().get('error', 'Error desconocido.')
+                QMessageBox.warning(self, "Error", f"Error al enviar el ticket: {error_message}")
+
+        except requests.ConnectionError:
+            QMessageBox.critical(self, "Error", "No se pudo conectar al servidor. Asegúrate de que el servidor esté en ejecución.")
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"Ha ocurrido un error: {str(e)}")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
