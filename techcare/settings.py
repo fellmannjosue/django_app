@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 # Cargar las variables del archivo .env
 load_dotenv()
 
+# Base directory path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECRET_KEY y DEBUG con variables de entorno
@@ -97,6 +98,9 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static',
     BASE_DIR / 'helpdesk/static',
 ]
+
+# Leer la ruta de la imagen desde el .env
+TICKET_IMAGE_PATH = os.getenv('TICKET_IMAGE_PATH')
 
 # DEFAULT AUTO FIELD
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

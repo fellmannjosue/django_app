@@ -5,6 +5,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Ticket
 from .forms import TicketForm
+import base64
+import os
 
 def submit_ticket(request):
     if request.method == 'POST':
@@ -13,9 +15,19 @@ def submit_ticket(request):
             ticket = form.save()
             print("Ticket guardado correctamente:", ticket)
 
+            # Leer el favicon en Base64
+            favicon_path = os.path.join('helpdesk', 'static', 'helpdesk', 'img', 'favicon.ico')
+            base64_img = ''
+            if os.path.exists(favicon_path):
+                with open(favicon_path, "rb") as img_file:
+                    base64_img = base64.b64encode(img_file.read()).decode('utf-8')
+
             # Enviar un correo al técnico con plantilla HTML
             subject_technician = f'Nuevo Ticket #{ticket.id} - {ticket.name}'
-            message_technician = render_to_string('helpdesk/email/email_notification.html', {'ticket': ticket})
+            message_technician = render_to_string(
+                'helpdesk/email/email_notification.html',
+                {'ticket': ticket, 'base64_img': base64_img}
+            )
             send_mail(
                 subject=subject_technician,
                 message='',
@@ -27,7 +39,10 @@ def submit_ticket(request):
 
             # Enviar una copia al usuario con plantilla HTML
             subject_user = f'Ticket #{ticket.id} - Confirmación de Recepción'
-            message_user = render_to_string('helpdesk/email/email_notification.html', {'ticket': ticket})
+            message_user = render_to_string(
+                'helpdesk/email/email_notification.html',
+                {'ticket': ticket, 'base64_img': base64_img}
+            )
             send_mail(
                 subject=subject_user,
                 message='',
@@ -58,15 +73,25 @@ def technician_dashboard(request):
 @login_required
 def update_ticket(request, ticket_id):
     ticket = get_object_or_404(Ticket, id=ticket_id)
-    
+
     if request.method == 'POST':
         new_status = request.POST.get('status')
         ticket.status = new_status
         ticket.save()
 
+        # Leer el favicon en Base64
+        favicon_path = os.path.join('helpdesk', 'static', 'helpdesk', 'img', 'favicon.ico')
+        base64_img = ''
+        if os.path.exists(favicon_path):
+            with open(favicon_path, "rb") as img_file:
+                base64_img = base64.b64encode(img_file.read()).decode('utf-8')
+
         # Enviar notificación por correo al usuario con plantilla HTML
         subject_update = f'Ticket #{ticket.id} - Estado Actualizado'
-        message_update = render_to_string('helpdesk/email/ticket_update.html', {'ticket': ticket, 'technician_name': 'Equipo Técnico'})
+        message_update = render_to_string(
+            'helpdesk/email/ticket_update.html',
+            {'ticket': ticket, 'technician_name': 'Equipo Técnico', 'base64_img': base64_img}
+        )
         send_mail(
             subject=subject_update,
             message='',

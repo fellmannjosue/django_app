@@ -11,7 +11,7 @@ def inventory_dashboard(request):
             form.save()
             return redirect('inventory_dashboard')
         else:
-            print(form.errors)  # Muestra errores en la consola si el formulario no es válido
+            print(form.errors)
     else:
         form = InventoryItemForm()
 

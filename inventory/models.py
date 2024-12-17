@@ -11,8 +11,9 @@ class InventoryItem(models.Model):
         ('Enrutadores de red', 'Enrutadores de red'),
     ]
 
-    category = models.CharField(max_length=50, choices=CATEGORY_CHOICES)
-    details = models.TextField()
+    category = models.CharField(max_length=100, choices=CATEGORY_CHOICES)
+    details = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)  # Este campo debe existir
 
     def __str__(self):
-        return f"{self.id} - {self.category}"
+        return f"{self.category} - {self.details}"
