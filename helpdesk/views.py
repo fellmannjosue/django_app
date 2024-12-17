@@ -5,28 +5,22 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Ticket
 from .forms import TicketForm
-import base64
 import os
+
+# Ruta de URL pública para imágenes
+PUBLIC_IMAGE_URL = "https://mi-servidor.com/static/helpdesk/img/favicon.png"
 
 def submit_ticket(request):
     if request.method == 'POST':
         form = TicketForm(request.POST)
         if form.is_valid():
             ticket = form.save()
-            print("Ticket guardado correctamente:", ticket)
 
-            # Leer el favicon en Base64
-            favicon_path = os.path.join('helpdesk', 'static', 'helpdesk', 'img', 'favicon.ico')
-            base64_img = ''
-            if os.path.exists(favicon_path):
-                with open(favicon_path, "rb") as img_file:
-                    base64_img = base64.b64encode(img_file.read()).decode('utf-8')
-
-            # Enviar un correo al técnico con plantilla HTML
+            # Correo al técnico
             subject_technician = f'Nuevo Ticket #{ticket.id} - {ticket.name}'
             message_technician = render_to_string(
                 'helpdesk/email/email_notification.html',
-                {'ticket': ticket, 'base64_img': base64_img}
+                {'ticket': ticket, 'img_url': PUBLIC_IMAGE_URL}
             )
             send_mail(
                 subject=subject_technician,
@@ -37,11 +31,11 @@ def submit_ticket(request):
                 html_message=message_technician,
             )
 
-            # Enviar una copia al usuario con plantilla HTML
+            # Copia al usuario
             subject_user = f'Ticket #{ticket.id} - Confirmación de Recepción'
             message_user = render_to_string(
                 'helpdesk/email/email_notification.html',
-                {'ticket': ticket, 'base64_img': base64_img}
+                {'ticket': ticket, 'img_url': PUBLIC_IMAGE_URL}
             )
             send_mail(
                 subject=subject_user,
@@ -54,21 +48,24 @@ def submit_ticket(request):
 
             return redirect('success')
         else:
-            print(form.errors)  # Imprime los errores si el formulario no es válido
+            print(form.errors)
 
     else:
         form = TicketForm()
 
     return render(request, 'helpdesk/submit_ticket.html', {'form': form})
 
+
 def success(request):
     return render(request, 'helpdesk/success.html')
+
 
 @login_required
 def technician_dashboard(request):
     tickets = Ticket.objects.all()
     messages.info(request, 'Bienvenido al Dashboard de Técnico.')
     return render(request, 'helpdesk/technician_dashboard.html', {'tickets': tickets})
+
 
 @login_required
 def update_ticket(request, ticket_id):
@@ -79,18 +76,11 @@ def update_ticket(request, ticket_id):
         ticket.status = new_status
         ticket.save()
 
-        # Leer el favicon en Base64
-        favicon_path = os.path.join('helpdesk', 'static', 'helpdesk', 'img', 'favicon.ico')
-        base64_img = ''
-        if os.path.exists(favicon_path):
-            with open(favicon_path, "rb") as img_file:
-                base64_img = base64.b64encode(img_file.read()).decode('utf-8')
-
-        # Enviar notificación por correo al usuario con plantilla HTML
+        # Notificación al usuario
         subject_update = f'Ticket #{ticket.id} - Estado Actualizado'
         message_update = render_to_string(
             'helpdesk/email/ticket_update.html',
-            {'ticket': ticket, 'technician_name': 'Equipo Técnico', 'base64_img': base64_img}
+            {'ticket': ticket, 'technician_name': 'Equipo Técnico', 'img_url': PUBLIC_IMAGE_URL}
         )
         send_mail(
             subject=subject_update,
