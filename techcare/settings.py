@@ -37,12 +37,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # Aplicaciones personalizadas
     'helpdesk',
     'inventory',
     'maintenance',
     'accounts',
 ]
+
 
 # ---------------------------------------------------------------------------
 # ⚙️ MIDDLEWARE
