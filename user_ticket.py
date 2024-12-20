@@ -1,16 +1,18 @@
 import sys
 import json
 import requests
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QTextEdit, QPushButton, QVBoxLayout, QMessageBox
-from PyQt5.QtGui import QIcon, QPixmap
-from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import (
+    QApplication, QWidget, QLabel, QLineEdit, QTextEdit, QPushButton, QVBoxLayout, QMessageBox, QHBoxLayout
+)
+from PyQt5.QtGui import QIcon, QPixmap, QMovie
+from PyQt5.QtCore import Qt, QTimer
 
 class TicketForm(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Crear Ticket")
         self.setWindowIcon(QIcon("static/img/ana-transformed.png"))
-        self.setFixedSize(400, 500)
+        self.setFixedSize(400, 550)
 
         # Logo
         logo = QLabel(self)
@@ -36,7 +38,14 @@ class TicketForm(QWidget):
         self.submit_button = QPushButton("Enviar Ticket")
         self.submit_button.clicked.connect(self.submit_ticket)
 
-        # Layout
+        # Animación de carga
+        self.loading_label = QLabel(self)
+        self.loading_movie = QMovie("static/img/loading.gif")  # Ruta al GIF animado
+        self.loading_label.setMovie(self.loading_movie)
+        self.loading_label.setAlignment(Qt.AlignCenter)
+        self.loading_label.setVisible(False)  # Ocultar la animación al inicio
+
+        # Layout principal
         layout = QVBoxLayout()
         layout.addWidget(logo)
         layout.addWidget(self.name_label)
@@ -48,6 +57,7 @@ class TicketForm(QWidget):
         layout.addWidget(self.description_label)
         layout.addWidget(self.description_input)
         layout.addWidget(self.submit_button)
+        layout.addWidget(self.loading_label)  # Añadir la animación al layout
 
         self.setLayout(layout)
 
@@ -61,6 +71,11 @@ class TicketForm(QWidget):
             QMessageBox.warning(self, "Error", "Por favor, completa todos los campos.")
             return
 
+        # Mostrar animación de carga
+        self.submit_button.setEnabled(False)
+        self.loading_label.setVisible(True)
+        self.loading_movie.start()
+
         data = {
             'name': name,
             'grade': grade,
@@ -68,6 +83,10 @@ class TicketForm(QWidget):
             'description': description
         }
 
+        # Realizar la solicitud en un QTimer para no bloquear la interfaz
+        QTimer.singleShot(100, lambda: self.send_request(data))
+
+    def send_request(self, data):
         try:
             response = requests.post(
                 'http://127.0.0.1:8000/helpdesk/submit_ticket/',
@@ -90,6 +109,11 @@ class TicketForm(QWidget):
             QMessageBox.critical(self, "Error", "No se pudo conectar al servidor. Asegúrate de que el servidor esté en ejecución.")
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Ha ocurrido un error: {str(e)}")
+        finally:
+            # Ocultar animación de carga y habilitar el botón
+            self.loading_movie.stop()
+            self.loading_label.setVisible(False)
+            self.submit_button.setEnabled(True)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

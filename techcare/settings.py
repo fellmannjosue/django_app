@@ -1,20 +1,35 @@
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+import dj_database_url
 
 # Cargar las variables del archivo .env
 load_dotenv()
 
-# Base directory path
+# ---------------------------------------------------------------------------
+# 🗂️ CONFIGURACIÓN BASE DEL PROYECTO
+# ---------------------------------------------------------------------------
+
+# BASE_DIR: La ruta base del proyecto Django
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECRET_KEY y DEBUG con variables de entorno
-SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-t@85mpa7f*y!9lg*y9k+ukcetjc*_*eqvthk2hfo#0n$4o%wcw')
+# ---------------------------------------------------------------------------
+# 🔐 CONFIGURACIÓN DE SEGURIDAD
+# ---------------------------------------------------------------------------
+
+# SECRET_KEY: Clave secreta para proteger la aplicación Django
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-t@85mpa7f*y!9lg*y9k+ukcetjc*_eqvthk2hfo#0n$4o%wcw')
+
+# DEBUG: Modo depuración (True en desarrollo, False en producción)
 DEBUG = os.getenv('DJANGO_DEBUG', 'True') == 'True'
 
+# ALLOWED_HOSTS: Lista de dominios permitidos para acceder a la aplicación
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
-# INSTALLED_APPS
+# ---------------------------------------------------------------------------
+# 🖥️ APLICACIONES INSTALADAS
+# ---------------------------------------------------------------------------
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -28,7 +43,11 @@ INSTALLED_APPS = [
     'accounts',
 ]
 
-# MIDDLEWARE
+
+# ---------------------------------------------------------------------------
+# ⚙️ MIDDLEWARE
+# ---------------------------------------------------------------------------
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -39,9 +58,16 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# ---------------------------------------------------------------------------
+# 🔗 CONFIGURACIÓN DE RUTAS PRINCIPALES
+# ---------------------------------------------------------------------------
+
 ROOT_URLCONF = 'techcare.urls'
 
-# TEMPLATES
+# ---------------------------------------------------------------------------
+# 📝 CONFIGURACIÓN DE TEMPLATES
+# ---------------------------------------------------------------------------
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -63,27 +89,35 @@ TEMPLATES = [
     },
 ]
 
-# WSGI
+# ---------------------------------------------------------------------------
+# 🌐 CONFIGURACIÓN WSGI
+# ---------------------------------------------------------------------------
+
 WSGI_APPLICATION = 'techcare.wsgi.application'
 
-# DATABASE
+# ---------------------------------------------------------------------------
+# 🗄️ CONFIGURACIÓN DE BASE DE DATOS
+# ---------------------------------------------------------------------------
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.getenv('DB_NAME', 'techcare_db'),
-        'USER': os.getenv('DB_USER', 'root'),
-        'PASSWORD': os.getenv('DB_PASSWORD', ''),
-        'HOST': os.getenv('DB_HOST', '127.0.0.1'),
-        'PORT': os.getenv('DB_PORT', '3306'),
-    }
+    'default': dj_database_url.config(default=os.getenv('DATABASE_URL'))
 }
 
-# LOGIN CONFIGURATION
+# Ejemplo de `DATABASE_URL` en el archivo .env:
+# DATABASE_URL=postgresql://techcare_db_user:DNVqE7QP6R4N0oWare28OCc3jG8xFfb4@dpg-cthe6ctumphs73fnbjfg-a/techcare_db
+
+# ---------------------------------------------------------------------------
+# 🔐 CONFIGURACIÓN DE AUTENTICACIÓN
+# ---------------------------------------------------------------------------
+
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/accounts/menu/'
 LOGOUT_REDIRECT_URL = '/accounts/login/'
 
-# EMAIL CONFIGURATION
+# ---------------------------------------------------------------------------
+# 📧 CONFIGURACIÓN DE CORREO ELECTRÓNICO
+# ---------------------------------------------------------------------------
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
@@ -92,15 +126,28 @@ EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'techcare.app2024@gmail.com')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', 'dvex nxbf quaj nxtc')
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
-# STATIC FILES
+# ---------------------------------------------------------------------------
+# 📂 CONFIGURACIÓN DE ARCHIVOS ESTÁTICOS
+# ---------------------------------------------------------------------------
+
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
     BASE_DIR / 'helpdesk/static',
 ]
 
-# Leer la ruta de la imagen desde el .env
-TICKET_IMAGE_PATH = os.getenv('TICKET_IMAGE_PATH')
+# Carpeta donde se recopilarán los archivos estáticos en producción
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# DEFAULT AUTO FIELD
+# ---------------------------------------------------------------------------
+# 🖼️ CONFIGURACIÓN DE IMÁGENES Y MULTIMEDIA
+# ---------------------------------------------------------------------------
+
+# Ruta para la imagen de los tickets
+TICKET_IMAGE_PATH = os.getenv('TICKET_IMAGE_PATH', 'techcare/helpdesk/static/helpdesk/img/ana-transformed.png')
+
+# ---------------------------------------------------------------------------
+# 🔍 CONFIGURACIÓN DE ID AUTOMÁTICO POR DEFECTO
+# ---------------------------------------------------------------------------
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
