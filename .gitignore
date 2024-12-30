@@ -3,3 +3,7 @@ package-lock.json
 # Ignorar carpetas de la app de escritorio
 build/
 dist/
+# Base de datos local
+db.sqlite3
+# Variables de entorno
+.env
