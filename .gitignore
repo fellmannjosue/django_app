@@ -1,2 +1,5 @@
 node_modules
 package-lock.json
+# Ignorar carpetas de la app de escritorio
+build/
+dist/
