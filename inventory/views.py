@@ -99,7 +99,7 @@ def download_item_pdf(request, item_id):
     # Pie de página
     pdf.setFont("Helvetica-Oblique", 10)
     pdf.setFillColor(colors.gray)
-    pdf.drawCentredString(card_width / 2, margin, "Sistema de Inventariado - Nuevo Amanecer Asociados")
+    pdf.drawCentredString(card_width / 2, margin, "Sistema de Inventariado - Asociacion Nuevo Amanecer")
 
     # Finalizar el PDF
     pdf.showPage()
