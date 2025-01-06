@@ -92,12 +92,14 @@ EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'techcare.app2024@gmail.com')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', 'dvex nxbf quaj nxtc')
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
-# STATIC FILES
+# Archivos estáticos
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
     BASE_DIR / 'helpdesk/static',
+    BASE_DIR / 'inventory/static',
 ]
+
 
 # Leer la ruta de la imagen desde el .env
 TICKET_IMAGE_PATH = os.getenv('TICKET_IMAGE_PATH')

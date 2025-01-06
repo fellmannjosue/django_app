@@ -76,6 +76,7 @@
                         <th>Categoría</th>
                         <th>Detalles</th>
                         <th>Fecha</th>
+                        <th>Acción</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -85,14 +86,20 @@
                         <td>{{ item.category }}</td>
                         <td>{{ item.details }}</td>
                         <td>{{ item.created_at }}</td>
+                        <td>
+                            <a href="{% url 'download_item_pdf' item.id %}" class="btn btn-primary btn-sm">
+                                Descargar PDF
+                            </a>
+                        </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="4" class="text-center">No hay ítems en el inventario.</td>
+                        <td colspan="5" class="text-center">No hay ítems registrados.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
+            
         </div>
     </div>
 </body>
