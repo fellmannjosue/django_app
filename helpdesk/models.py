@@ -6,6 +6,7 @@ class Ticket(models.Model):
     email = models.CharField(max_length=255)
     description = models.TextField()
     status = models.CharField(max_length=50, default='Enviado')
+    comments = models.TextField(blank=True, null=True)  # Campo para comentarios, opcional
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

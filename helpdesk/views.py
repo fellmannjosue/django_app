@@ -119,18 +119,35 @@ def update_ticket(request, ticket_id):
 
     if request.method == 'POST':
         new_status = request.POST.get('status')
-        ticket.status = new_status
+        new_comments = request.POST.get('comments')
+
+        # Actualizar el estado
+        if new_status and new_status != ticket.status:
+            ticket.status = new_status
+
+        # Actualizar los comentarios
+        if new_comments is not None:  # Permite vaciar comentarios
+            ticket.comments = new_comments
+
+        # Guardar cambios
         ticket.save()
 
         # Notificación al usuario
         subject_update = f'Ticket #{ticket.id} - Estado Actualizado'
         message_update = render_to_string(
             'helpdesk/email/ticket_update.html',
-            {'ticket': ticket, 'technician_name': 'Equipo Técnico', 'img_url': PUBLIC_IMAGE_URL}
+            {
+                'ticket': ticket,
+                'technician_name': 'Equipo Técnico',
+                'comments': ticket.comments,  # Incluir comentarios en el contexto
+                'img_url': PUBLIC_IMAGE_URL
+            }
         )
         send_email_async(subject_update, message_update, [ticket.email])
 
+        # Mensaje de éxito
         messages.success(request, f'El estado del ticket #{ticket.id} se actualizó correctamente.')
         return redirect('technician_dashboard')
 
     return render(request, 'helpdesk/update_ticket.html', {'ticket': ticket})
+

@@ -98,6 +98,8 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static',
     BASE_DIR / 'helpdesk/static',
     BASE_DIR / 'inventory/static',
+    BASE_DIR / 'maintenance/static',
+    BASE_DIR / 'accounts/static',
 ]
 
 

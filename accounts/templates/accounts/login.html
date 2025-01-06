@@ -13,21 +13,57 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
+            margin: 0;
         }
         .login-container {
-            width: 100%;
             max-width: 400px;
+            width: 100%;
             background: #fff;
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .login-logo img {
+            width: 100px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            display: none;
+        }
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
         }
     </style>
 </head>
 <body>
+    <!-- Loading Animation -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="text-center">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p class="mt-3">Iniciando sesión... <br><br> Bienvenido a la Plataforma de TechCare</p>
+        </div>
+    </div>
+
+    <!-- Login Form -->
     <div class="login-container">
-        <h2 class="text-center mb-4">Iniciar Sesión</h2>
-        <form method="post">
+        <div class="login-logo">
+            <img src="{% static 'accounts/img/ana-transformed.png' %}" alt="Logo">
+        </div>
+        <h2 class="mb-4">Iniciar Sesión</h2>
+        <form id="loginForm" method="post">
             {% csrf_token %}
             <div class="mb-3">
                 <label for="username" class="form-label">Usuario</label>
@@ -40,5 +76,22 @@
             <button type="submit" class="btn btn-primary w-100">Iniciar Sesión</button>
         </form>
     </div>
+
+    <script>
+        const loginForm = document.getElementById('loginForm');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+
+        loginForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            // Mostrar la animación de carga
+            loadingOverlay.style.display = 'flex';
+
+            // Esperar 2 segundos y luego enviar el formulario
+            setTimeout(() => {
+                loginForm.submit();
+            }, 3500);
+        });
+    </script>
 </body>
 </html>
