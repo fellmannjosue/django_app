@@ -40,6 +40,13 @@
                 <img src="{% static 'inventory/img/ana.jpg' %}" alt="Logo">
                 <h2>Ficha de Mantenimiento</h2>
             </div>
+            <div class="container mt-5">
+                <!-- Contenido de la ficha de mantenimiento -->
+                <a href="{% url 'menu' %}" class="btn btn-secondary mt-3">
+                    <img src="{% static 'maintenance/img/regresar.png' %}" alt="Regresar" style="width: 24px; height: 24px; margin-right: 5px;">
+                    Regresar al Menú Principal
+                </a>
+            </div>            
             <form method="post">
                 {% csrf_token %}
                 <div class="mb-3">

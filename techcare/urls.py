@@ -6,5 +6,5 @@ urlpatterns = [
     path('helpdesk/', include('helpdesk.urls')),
     path('accounts/', include('accounts.urls')),
     path('inventory/', include('inventory.urls')),
-    path('maintenance/', include('maintenance.urls')),
+    path('maintenance/', include('maintenance.urls')),   
 ]

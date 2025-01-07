@@ -10,7 +10,7 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('menu')
+            return redirect('menu')  # Asegúrate que este nombre coincide con `name='menu'`
         else:
             messages.error(request, 'Credenciales inválidas')
     return render(request, 'accounts/login.html')
@@ -21,4 +21,4 @@ def logout_view(request):
 
 @login_required
 def menu_view(request):
-    return render(request, 'accounts/menu.html')
+    return render(request, 'accounts/menu.html')  # La plantilla está bien referenciada
