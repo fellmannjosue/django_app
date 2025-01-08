@@ -24,10 +24,15 @@ def send_email_async(subject, message, recipient_list):
 
 @csrf_exempt
 def submit_ticket(request):
+    """
+    Maneja la creación de tickets desde usuarios web o PyQt5 (JSON).
+    Permite adjuntar archivos y envía correos de notificación.
+    """
     if request.method == 'POST':
         # Manejar solicitudes JSON desde PyQt5
         if request.headers.get('Content-Type') == 'application/json':
             try:
+                # Parsear los datos JSON
                 data = json.loads(request.body)
                 name = data.get('name')
                 grade = data.get('grade')
@@ -62,6 +67,7 @@ def submit_ticket(request):
                 )
                 send_email_async(subject_user, message_user, [ticket.email])
 
+                # Respuesta JSON de éxito
                 return JsonResponse({'message': f'Ticket #{ticket.id} creado exitosamente'}, status=201)
 
             except json.JSONDecodeError:
@@ -69,11 +75,12 @@ def submit_ticket(request):
 
         # Manejar solicitudes estándar desde formularios web
         else:
-            form = TicketForm(request.POST)
+            form = TicketForm(request.POST, request.FILES)  # Maneja archivos adjuntos con request.FILES
             if form.is_valid():
+                # Guardar el ticket en la base de datos
                 ticket = form.save()
 
-                # Correo al técnico
+                # Enviar correo al técnico
                 subject_technician = f'Nuevo Ticket #{ticket.id} - {ticket.name}'
                 message_technician = render_to_string(
                     'helpdesk/email/email_notification.html',
@@ -81,7 +88,7 @@ def submit_ticket(request):
                 )
                 send_email_async(subject_technician, message_technician, ['techcare.app2024@gmail.com'])
 
-                # Copia al usuario
+                # Enviar correo al usuario
                 subject_user = f'Ticket #{ticket.id} - Confirmación de Recepción'
                 message_user = render_to_string(
                     'helpdesk/email/email_notification.html',
@@ -89,17 +96,21 @@ def submit_ticket(request):
                 )
                 send_email_async(subject_user, message_user, [ticket.email])
 
+                # Mensaje de éxito en el navegador
                 messages.success(request, f'Ticket #{ticket.id} creado exitosamente.')
                 return JsonResponse({'message': f'Ticket #{ticket.id} creado exitosamente'}, status=201)
 
             else:
+                # Manejo de errores en el formulario
                 errors = form.errors.as_json()
                 return JsonResponse({'error': 'Error en el formulario', 'details': errors}, status=400)
 
     else:
+        # Renderizar el formulario de creación de tickets en la interfaz web
         form = TicketForm()
 
     return render(request, 'helpdesk/submit_ticket.html', {'form': form})
+
 
 
 def success(request):

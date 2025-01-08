@@ -5,12 +5,13 @@ class Ticket(models.Model):
     grade = models.CharField(max_length=50)
     email = models.CharField(max_length=255)
     description = models.TextField()
+    attachment = models.FileField(upload_to='attachments/', null=True, blank=True)  # Campo para adjuntos
     status = models.CharField(max_length=50, default='Enviado')
-    comments = models.TextField(blank=True, null=True)  # Campo para comentarios, opcional
+    comments = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        db_table = 'tickets'  # Especifica el nombre correcto de la tabla en la base de datos
+        db_table = 'tickets'
 
     def __str__(self):
         return f'Ticket #{self.id} - {self.name}'

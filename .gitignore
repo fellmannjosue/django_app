@@ -6,3 +6,6 @@ dist/
 # Base de datos local
 db.sqlite3
 # Variables de entorno
+.env
+user_tickets.py
+user_tickets.spec
