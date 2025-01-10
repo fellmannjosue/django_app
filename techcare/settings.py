@@ -2,25 +2,19 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
-# Cargar variables de entorno desde .env
+# Cargar las variables del archivo .env
 load_dotenv()
 
+# Base directory path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Configuraciones básicas
+# SECRET_KEY y DEBUG con variables de entorno
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-t@85mpa7f*y!9lg*y9k+ukcetjc*_*eqvthk2hfo#0n$4o%wcw')
-DEBUG = False  # ¡Desactiva DEBUG en producción!
-ALLOWED_HOSTS = ['soporte.ana-hn.org', 'www.soporte.ana-hn.org']
+DEBUG = os.getenv('DJANGO_DEBUG', 'True') == 'True'
 
-# Seguridad HTTPS
-SECURE_SSL_REDIRECT = True
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
-SECURE_HSTS_SECONDS = 31536000
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-SECURE_HSTS_PRELOAD = True
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost','192.168.10.6']
 
-# Aplicaciones instaladas
+# INSTALLED_APPS
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -34,7 +28,7 @@ INSTALLED_APPS = [
     'accounts',
 ]
 
-# Middleware
+# MIDDLEWARE
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -45,11 +39,34 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-# Configuración de rutas y WSGI
 ROOT_URLCONF = 'techcare.urls'
+
+# TEMPLATES
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            BASE_DIR / 'templates',
+            BASE_DIR / 'helpdesk/templates',
+            BASE_DIR / 'inventory/templates',
+            BASE_DIR / 'maintenance/templates',
+        ],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+
+# WSGI
 WSGI_APPLICATION = 'techcare.wsgi.application'
 
-# Configuración de la base de datos
+# DATABASE
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -61,36 +78,12 @@ DATABASES = {
     }
 }
 
-# Configuración de archivos estáticos y de medios
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+# LOGIN CONFIGURATION
+LOGIN_URL = '/accounts/login/'
+LOGIN_REDIRECT_URL = '/accounts/menu/'
+LOGOUT_REDIRECT_URL = '/accounts/login/'
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
-
-
-# Configuración de Templates en settings.py
-TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-            BASE_DIR / 'templates',  # Ruta donde estarán tus plantillas personalizadas
-        ],
-        'APP_DIRS': True,  # Esto permite que Django busque automáticamente plantillas en los directorios de las aplicaciones
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',  # Necesario para el admin
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-            ],
-        },
-    },
-]
-
-
-# Configuración de correo
+# EMAIL CONFIGURATION
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
@@ -99,25 +92,19 @@ EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'techcare.app2024@gmail.com')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', 'dvex nxbf quaj nxtc')
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
-# Logs de errores
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'file': {
-            'level': 'ERROR',
-            'class': 'logging.FileHandler',
-            'filename': BASE_DIR / 'django_error.log',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['file'],
-            'level': 'ERROR',
-            'propagate': True,
-        },
-    },
-}
+# Archivos estáticos
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+    BASE_DIR / 'helpdesk/static',
+    BASE_DIR / 'inventory/static',
+    BASE_DIR / 'maintenance/static',
+    BASE_DIR / 'accounts/static',
+]
 
-# Campo por defecto de auto incrementación
+
+# Leer la ruta de la imagen desde el .env
+TICKET_IMAGE_PATH = os.getenv('TICKET_IMAGE_PATH')
+
+# DEFAULT AUTO FIELD
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
