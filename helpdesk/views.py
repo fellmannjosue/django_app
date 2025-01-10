@@ -12,7 +12,7 @@ import json
 from threading import Thread
 
 # Ruta de URL pública para imágenes
-PUBLIC_IMAGE_URL = "http://127.0.0.1:8000/static/helpdesk/img/favicon.png"
+PUBLIC_IMAGE_URL = "https://soporte.ana-hn.org:437/static/helpdesk/img/favicon.png"
 
 def send_email_async(subject, message, recipient_list):
     """Función para enviar correos de forma asíncrona."""

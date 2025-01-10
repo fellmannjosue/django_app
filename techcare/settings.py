@@ -10,9 +10,23 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECRET_KEY y DEBUG con variables de entorno
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-t@85mpa7f*y!9lg*y9k+ukcetjc*_*eqvthk2hfo#0n$4o%wcw')
-DEBUG = os.getenv('DJANGO_DEBUG', 'True') == 'True'
+DEBUG = os.getenv('DJANGO_DEBUG', 'True') == 'false'
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost','192.168.10.6']
+ALLOWED_HOSTS = ['127.0.0.1',
+                  'localhost',
+                  '192.168.10.6',
+                  'soporte.ana-hn.org', 
+                  'www.soporte.ana-hn.org'
+                ]
+# Seguridad HTTPS
+SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SECURE_HSTS_SECONDS = 31536000
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+
+
 
 # INSTALLED_APPS
 INSTALLED_APPS = [
@@ -40,6 +54,14 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'techcare.urls'
+
+# Configuración de archivos estáticos y de medios
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [BASE_DIR / 'static']
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # TEMPLATES
 TEMPLATES = [
