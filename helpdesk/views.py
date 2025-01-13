@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.core.mail import send_mail
+from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -7,43 +7,44 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import Ticket
 from .forms import TicketForm
-import os
 import json
 from threading import Thread
 
-# Ruta de URL pública para imágenes
+# Public URL for static images
 PUBLIC_IMAGE_URL = "https://soporte.ana-hn.org:437/static/helpdesk/img/favicon.png"
 
-def send_email_async(subject, message, recipient_list):
-    """Función para enviar correos de forma asíncrona."""
-    Thread(
-        target=send_mail,
-        args=(subject, '', 'techcare.app2024@gmail.com', recipient_list),
-        kwargs={'html_message': message, 'fail_silently': False}
-    ).start()
+def send_email_with_attachment(subject, message, recipient_list, attachment=None):
+    """
+    Sends emails with an optional attachment.
+    """
+    email = EmailMessage(subject, message, 'techcare.app2024@gmail.com', recipient_list)
+    email.content_subtype = 'html'  # Set the content type to HTML
+    if attachment:  # Attach the file if provided
+        email.attach_file(attachment)
+    email.send(fail_silently=False)  # Sends the email
 
 @csrf_exempt
 def submit_ticket(request):
     """
-    Maneja la creación de tickets desde usuarios web o PyQt5 (JSON).
-    Permite adjuntar archivos y envía correos de notificación.
+    Handles ticket submissions from web users or PyQt5 clients.
+    Supports file attachments and sends notification emails.
     """
     if request.method == 'POST':
-        # Manejar solicitudes JSON desde PyQt5
+        # Handle JSON requests from PyQt5
         if request.headers.get('Content-Type') == 'application/json':
             try:
-                # Parsear los datos JSON
+                # Parse JSON data
                 data = json.loads(request.body)
                 name = data.get('name')
                 grade = data.get('grade')
                 email = data.get('email')
                 description = data.get('description')
 
-                # Validar que todos los campos estén completos
+                # Validate required fields
                 if not all([name, grade, email, description]):
-                    return JsonResponse({'error': 'Todos los campos son obligatorios'}, status=400)
+                    return JsonResponse({'error': 'All fields are required'}, status=400)
 
-                # Crear el ticket
+                # Create the ticket
                 ticket = Ticket.objects.create(
                     name=name,
                     grade=grade,
@@ -51,114 +52,119 @@ def submit_ticket(request):
                     description=description
                 )
 
-                # Enviar correo al técnico
-                subject_technician = f'Nuevo Ticket #{ticket.id} - {ticket.name}'
+                # Send notification email to the technician
+                subject_technician = f'New Ticket #{ticket.id} - {ticket.name}'
                 message_technician = render_to_string(
                     'helpdesk/email/email_notification.html',
                     {'ticket': ticket, 'img_url': PUBLIC_IMAGE_URL}
                 )
-                send_email_async(subject_technician, message_technician, ['techcare.app2024@gmail.com'])
+                send_email_with_attachment(subject_technician, message_technician, ['techcare.app2024@gmail.com'])
 
-                # Enviar correo al usuario
-                subject_user = f'Ticket #{ticket.id} - Confirmación de Recepción'
+                # Send confirmation email to the user
+                subject_user = f'Ticket #{ticket.id} - Confirmation Received'
                 message_user = render_to_string(
                     'helpdesk/email/email_notification.html',
                     {'ticket': ticket, 'img_url': PUBLIC_IMAGE_URL}
                 )
-                send_email_async(subject_user, message_user, [ticket.email])
+                send_email_with_attachment(subject_user, message_user, [ticket.email])
 
-                # Respuesta JSON de éxito
-                return JsonResponse({'message': f'Ticket #{ticket.id} creado exitosamente'}, status=201)
+                return JsonResponse({'message': f'Ticket #{ticket.id} created successfully'}, status=201)
 
             except json.JSONDecodeError:
-                return JsonResponse({'error': 'Error al procesar los datos JSON'}, status=400)
+                return JsonResponse({'error': 'Error processing JSON data'}, status=400)
 
-        # Manejar solicitudes estándar desde formularios web
+        # Handle standard form submissions from the web
         else:
-            form = TicketForm(request.POST, request.FILES)  # Maneja archivos adjuntos con request.FILES
+            form = TicketForm(request.POST, request.FILES)  # Include request.FILES for file uploads
             if form.is_valid():
-                # Guardar el ticket en la base de datos
+                # Save the ticket to the database
                 ticket = form.save()
 
-                # Enviar correo al técnico
-                subject_technician = f'Nuevo Ticket #{ticket.id} - {ticket.name}'
+                # File attachment path
+                attachment_path = ticket.attachment.path if ticket.attachment else None
+
+                # Send notification email to the technician
+                subject_technician = f'New Ticket #{ticket.id} - {ticket.name}'
                 message_technician = render_to_string(
                     'helpdesk/email/email_notification.html',
                     {'ticket': ticket, 'img_url': PUBLIC_IMAGE_URL}
                 )
-                send_email_async(subject_technician, message_technician, ['techcare.app2024@gmail.com'])
+                send_email_with_attachment(subject_technician, message_technician, ['techcare.app2024@gmail.com'], attachment_path)
 
-                # Enviar correo al usuario
-                subject_user = f'Ticket #{ticket.id} - Confirmación de Recepción'
+                # Send confirmation email to the user
+                subject_user = f'Ticket #{ticket.id} - Confirmation Received'
                 message_user = render_to_string(
                     'helpdesk/email/email_notification.html',
                     {'ticket': ticket, 'img_url': PUBLIC_IMAGE_URL}
                 )
-                send_email_async(subject_user, message_user, [ticket.email])
+                send_email_with_attachment(subject_user, message_user, [ticket.email], attachment_path)
 
-                # Mensaje de éxito en el navegador
-                messages.success(request, f'Ticket #{ticket.id} creado exitosamente.')
-                return JsonResponse({'message': f'Ticket #{ticket.id} creado exitosamente'}, status=201)
+                messages.success(request, f'Ticket #{ticket.id} created successfully.')
+                return redirect('success')  # Redirect to the success page
 
             else:
-                # Manejo de errores en el formulario
-                errors = form.errors.as_json()
-                return JsonResponse({'error': 'Error en el formulario', 'details': errors}, status=400)
+                messages.error(request, 'Error in the form. Please check the fields.')
+                return render(request, 'helpdesk/submit_ticket.html', {'form': form})
 
     else:
-        # Renderizar el formulario de creación de tickets en la interfaz web
         form = TicketForm()
-
-    return render(request, 'helpdesk/submit_ticket.html', {'form': form})
-
+        return render(request, 'helpdesk/submit_ticket.html', {'form': form})
 
 
+@login_required
 def success(request):
+    """
+    Renders a success page after ticket submission.
+    """
     return render(request, 'helpdesk/success.html')
 
 
 @login_required
 def technician_dashboard(request):
+    """
+    Displays the technician's dashboard with a list of all tickets.
+    """
     tickets = Ticket.objects.all()
-    messages.info(request, 'Bienvenido al Dashboard de Técnico.')
+    messages.info(request, 'Welcome to the Technician Dashboard.')
     return render(request, 'helpdesk/technician_dashboard.html', {'tickets': tickets})
 
 
 @login_required
 def update_ticket(request, ticket_id):
+    """
+    Allows technicians to update ticket status and add comments.
+    """
     ticket = get_object_or_404(Ticket, id=ticket_id)
 
     if request.method == 'POST':
         new_status = request.POST.get('status')
         new_comments = request.POST.get('comments')
 
-        # Actualizar el estado
+        # Update ticket status
         if new_status and new_status != ticket.status:
             ticket.status = new_status
 
-        # Actualizar los comentarios
-        if new_comments is not None:  # Permite vaciar comentarios
+        # Update ticket comments
+        if new_comments is not None:
             ticket.comments = new_comments
 
-        # Guardar cambios
+        # Save changes
         ticket.save()
 
-        # Notificación al usuario
-        subject_update = f'Ticket #{ticket.id} - Estado Actualizado'
+        # Notify the user about the update
+        subject_update = f'Ticket #{ticket.id} - Status Updated'
         message_update = render_to_string(
             'helpdesk/email/ticket_update.html',
             {
                 'ticket': ticket,
-                'technician_name': 'Equipo Técnico',
-                'comments': ticket.comments,  # Incluir comentarios en el contexto
+                'technician_name': 'Technical Team',
+                'comments': ticket.comments,
                 'img_url': PUBLIC_IMAGE_URL
             }
         )
-        send_email_async(subject_update, message_update, [ticket.email])
+        send_email_with_attachment(subject_update, message_update, [ticket.email])
 
-        # Mensaje de éxito
-        messages.success(request, f'El estado del ticket #{ticket.id} se actualizó correctamente.')
+        messages.success(request, f'Ticket #{ticket.id} updated successfully.')
         return redirect('technician_dashboard')
 
     return render(request, 'helpdesk/update_ticket.html', {'ticket': ticket})
-
