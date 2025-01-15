@@ -43,13 +43,7 @@
                 <img src="{% static 'inventory/img/ana-transformed.png' %}" alt="Logo">
                 <h2>Sistema de Inventariado</h2>
             </div>
-            <div class="container mt-5">
-                <!-- Contenido del sistema de inventariado -->
-                <a href="{% url 'menu' %}" class="btn btn-secondary mt-3">
-                    <img src="{% static 'inventory/img/regresar.png' %}" alt="Regresar" style="width: 24px; height: 24px; margin-right: 5px;">
-                    Regresar al Menú Principal
-                </a>
-            </div>            
+                       
             <form method="post">
                 {% csrf_token %}
                 <div class="mb-3">
@@ -107,6 +101,14 @@
                 </tbody>
             </table>
             
+        </div>
+
+        <div class="container mt-5">
+            <!-- Contenido del sistema de inventariado -->
+            <a href="{% url 'menu' %}" class="btn btn-secondary mt-3">
+                <img src="{% static 'inventory/img/regresar.png' %}" alt="Regresar" style="width: 24px; height: 24px; margin-right: 5px;">
+                Regresar al Menú Principal
+            </a>
         </div>
     </div>
 </body>
