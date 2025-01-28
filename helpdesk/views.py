@@ -52,7 +52,7 @@ def submit_ticket(request):
                 )
 
                 # Enviar correo al técnico
-                subject_technician = f'Nuevo Ticket #{ticket.id} - {ticket.name}'
+                subject_technician = f'Nuevo Ticket #{ticket.ticket_id} - {ticket.name}'
                 message_technician = render_to_string(
                     'helpdesk/email/email_notification.html',
                     {'ticket': ticket, 'img_url': PUBLIC_IMAGE_URL}
@@ -60,7 +60,7 @@ def submit_ticket(request):
                 send_email_async(subject_technician, message_technician, ['techcare.app2024@gmail.com'])
 
                 # Enviar correo al usuario
-                subject_user = f'Ticket #{ticket.id} - Confirmación de Recepción'
+                subject_user = f'Ticket #{ticket.ticket_id} - Confirmación de Recepción'
                 message_user = render_to_string(
                     'helpdesk/email/email_notification.html',
                     {'ticket': ticket, 'img_url': PUBLIC_IMAGE_URL}
@@ -68,7 +68,7 @@ def submit_ticket(request):
                 send_email_async(subject_user, message_user, [ticket.email])
 
                 # Respuesta JSON de éxito
-                return JsonResponse({'message': f'Ticket #{ticket.id} creado exitosamente'}, status=201)
+                return JsonResponse({'message': f'Ticket #{ticket.ticket_id} creado exitosamente'}, status=201)
 
             except json.JSONDecodeError:
                 return JsonResponse({'error': 'Error al procesar los datos JSON'}, status=400)
@@ -81,7 +81,7 @@ def submit_ticket(request):
                 ticket = form.save()
 
                 # Enviar correo al técnico
-                subject_technician = f'Nuevo Ticket #{ticket.id} - {ticket.name}'
+                subject_technician = f'Nuevo Ticket #{ticket.ticket_id} - {ticket.name}'
                 message_technician = render_to_string(
                     'helpdesk/email/email_notification.html',
                     {'ticket': ticket, 'img_url': PUBLIC_IMAGE_URL}
@@ -89,7 +89,7 @@ def submit_ticket(request):
                 send_email_async(subject_technician, message_technician, ['techcare.app2024@gmail.com'])
 
                 # Enviar correo al usuario
-                subject_user = f'Ticket #{ticket.id} - Confirmación de Recepción'
+                subject_user = f'Ticket #{ticket.ticket_id} - Confirmación de Recepción'
                 message_user = render_to_string(
                     'helpdesk/email/email_notification.html',
                     {'ticket': ticket, 'img_url': PUBLIC_IMAGE_URL}
@@ -97,8 +97,8 @@ def submit_ticket(request):
                 send_email_async(subject_user, message_user, [ticket.email])
 
                 # Mensaje de éxito en el navegador
-                messages.success(request, f'Ticket #{ticket.id} creado exitosamente.')
-                return JsonResponse({'message': f'Ticket #{ticket.id} creado exitosamente'}, status=201)
+                messages.success(request, f'Ticket #{ticket.ticket_id} creado exitosamente.')
+                return JsonResponse({'message': f'Ticket #{ticket.ticket_id} creado exitosamente'}, status=201)
 
             else:
                 # Manejo de errores en el formulario
@@ -124,6 +124,7 @@ def technician_dashboard(request):
     return render(request, 'helpdesk/technician_dashboard.html', {'tickets': tickets})
 
 
+
 @login_required
 def update_ticket(request, ticket_id):
     ticket = get_object_or_404(Ticket, id=ticket_id)
@@ -144,7 +145,7 @@ def update_ticket(request, ticket_id):
         ticket.save()
 
         # Notificación al usuario
-        subject_update = f'Ticket #{ticket.id} - Estado Actualizado'
+        subject_update = f'Ticket #{ticket.ticket_id} - Estado Actualizado'
         message_update = render_to_string(
             'helpdesk/email/ticket_update.html',
             {
@@ -157,7 +158,7 @@ def update_ticket(request, ticket_id):
         send_email_async(subject_update, message_update, [ticket.email])
 
         # Mensaje de éxito
-        messages.success(request, f'El estado del ticket #{ticket.id} se actualizó correctamente.')
+        messages.success(request, f'El estado del ticket #{ticket.ticket_id} se actualizó correctamente.')
         return redirect('technician_dashboard')
 
     return render(request, 'helpdesk/update_ticket.html', {'ticket': ticket})
