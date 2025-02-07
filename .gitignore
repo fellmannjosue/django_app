@@ -7,3 +7,5 @@ dist/
 db.sqlite3
 # Variables de entorno
 .env
+# Archivos de configuración 
+techcare_env
